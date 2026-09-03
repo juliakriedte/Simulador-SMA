@@ -1,5 +1,5 @@
 public class Simulador {
-    static final int CAPACIDADE = 2;
+    static final int CAPACIDADE = 1;
     static long k = 5;
 
     static long a = 1103515245L;
@@ -131,9 +131,4 @@ public class Simulador {
             proximaSaidaServidor[servidor] = Double.MAX_VALUE;
         }
     }
-}
-
-public enum Evento{
-    CHEGADA,
-    SAIDA
 }
