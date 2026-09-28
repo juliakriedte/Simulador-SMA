@@ -6,13 +6,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Modelo da rede de filas carregado de um arquivo .yml. */
 public class Modelo {
 
     public static class ConfigFila {
         public String nome;
         public int servidores;
-        public int capacidade = -1;           // -1 = infinita
+        public int capacidade = -1;
         public boolean chegadaExterna = false;
         public double primeiraChegada;
         public double minChegada, maxChegada;
@@ -52,7 +51,6 @@ public class Modelo {
         List<String> erros = new ArrayList<>();
         Map<String, Integer> indice = new LinkedHashMap<>();
 
-        // ---- queues ----
         Object q = raiz.get("queues");
         if (!(q instanceof Map)) throw new ModeloInvalido("Secao 'queues' ausente.");
         Map<String, Object> mq = asMap(q);
@@ -70,7 +68,7 @@ public class Modelo {
                 if (f.servidores < 1) erros.add("Fila " + f.nome + ": 'servers' deve ser >= 1.");
             }
             Double cap = num(p, "capacity", f.nome, false, erros);
-            if (cap != null) f.capacidade = cap.intValue();     // ausente = infinita
+            if (cap != null) f.capacidade = cap.intValue();
             Double mn = num(p, "minService", f.nome, true, erros);
             Double mx = num(p, "maxService", f.nome, true, erros);
             if (mn != null && mx != null) {
@@ -109,7 +107,6 @@ public class Modelo {
             }
         }
 
-        // ---- network ----
         roteamento = new double[filas.size()][filas.size()];
         Object n = raiz.get("network");
         if (n instanceof List) {
@@ -133,7 +130,6 @@ public class Modelo {
             }
         }
 
-        // ---- aleatorios ----
         Object sd = raiz.get("seeds");
         Object rl = raiz.get("rndnumbers");
         if (sd instanceof List && !asList(sd).isEmpty()) {

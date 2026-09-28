@@ -2,13 +2,8 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.PriorityQueue;
 
-/**
- * Simulador de redes de filas G/G/c/K com topologia arbitraria, carregada de um .yml.
- * Uso: java Simulador [arquivo.yml] [-v]
- */
 public class Simulador {
 
-    /** Resultado de uma execucao (uma semente ou uma lista de aleatorios). */
     static class Resultado {
         double tempoGlobal;
         long[] perdas;
@@ -100,12 +95,11 @@ public class Simulador {
         }
     }
 
-    /** Sorteia o destino; retorna -1 se o cliente deixa o sistema. */
     private int decideDestino(int origem) {
         double[] linha = modelo.roteamento[origem];
         boolean temRota = false;
         for (double p : linha) if (p > 0) { temRota = true; break; }
-        if (!temRota) return -1;               // fila sem saidas: nao consome aleatorio
+        if (!temRota) return -1;
 
         double r = gerador.proximo();
         double acumulado = 0.0;
@@ -115,8 +109,6 @@ public class Simulador {
         }
         return -1;
     }
-
-    // ------------------------------------------------------------------ saida
 
     private static String rotulo(Modelo.ConfigFila f) {
         return f.nome + ": G/G/" + f.servidores + (f.capacidade >= 0 ? "/" + f.capacidade : "");

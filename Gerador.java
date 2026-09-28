@@ -1,11 +1,5 @@
-/**
- * Fonte de numeros pseudoaleatorios em [0,1). Dois modos:
- *  - semente: gerador congruencial linear, limitado a "limite" numeros;
- *  - lista: consome os numeros fornecidos no arquivo (rndnumbers).
- */
 public class Gerador {
 
-    /** Lancada quando a lista fornecida no arquivo acaba no meio de um evento. */
     public static class SemAleatorios extends RuntimeException {
         public SemAleatorios() { super("lista de numeros aleatorios esgotada"); }
     }
@@ -14,7 +8,7 @@ public class Gerador {
     private static final long C = 12345L;
     private static final long M = 2147483648L;
 
-    private final double[] lista;   // null no modo semente
+    private final double[] lista; 
     private int indice = 0;
     private long previous;
     private long restantes;
