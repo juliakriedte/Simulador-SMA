@@ -8,9 +8,13 @@ Escrito em Java (JDK 11+), **sem dependências externas** (o YAML é lido por um
 
 ```bash
 javac *.java
-java Simulador model.yml          # resultado (média, se houver várias sementes)
-java Simulador model.yml -v       # idem + resultado detalhado de cada semente
+java Simulador model.yml
+java Simulador model.yml -v
 ```
+
+O primeiro comando mostra o resultado (média, se houver várias sementes); com `-v`
+mostra também o resultado de cada semente. Exemplo (modelo do T1):
+`java Simulador exemplos/modelo-t1.yml`.
 
 Sem argumento, o programa procura `model.yml` na pasta atual.
 

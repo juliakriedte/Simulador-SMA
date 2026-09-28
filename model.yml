@@ -21,6 +21,7 @@
 #    * If the option 'seeds' is used, 'rndnumbers' is ignored. In this case, delete 'rndnumbers'
 #      and its list of pseudo-random numbers
 #  
+#  The remainder details in this file is self-explained. Good-luck! :-)
 #  
 #  DO NOT DELETE THE NEXT LINE STARTED BY '!'
 !PARAMETERS
