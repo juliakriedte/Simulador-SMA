@@ -4,12 +4,14 @@ public class Evento implements Comparable<Evento> {
     private final double tempo;
     private final int fila;
     private final int servidor;
+    private final long seq; // desempate deterministico para eventos no mesmo instante
 
-    public Evento(TipoEvento tipo, double tempo, int fila, int servidor) {
+    public Evento(TipoEvento tipo, double tempo, int fila, int servidor, long seq) {
         this.tipo = tipo;
         this.tempo = tempo;
         this.fila = fila;
         this.servidor = servidor;
+        this.seq = seq;
     }
 
     public TipoEvento getTipo() { return tipo; }
@@ -19,6 +21,7 @@ public class Evento implements Comparable<Evento> {
 
     @Override
     public int compareTo(Evento outro) {
-        return Double.compare(this.tempo, outro.tempo);
+        int c = Double.compare(this.tempo, outro.tempo);
+        return c != 0 ? c : Long.compare(this.seq, outro.seq);
     }
 }

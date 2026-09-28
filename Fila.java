@@ -1,67 +1,61 @@
 import java.util.Arrays;
 
+/** Fila G/G/servidores/capacidade (capacidade < 0 = infinita). */
 public class Fila {
 
     private final int id;
+    private final String nome;
     private final int servidores;
     private final int capacidade;
 
+    private final double minChegada, maxChegada, primeiraChegada;
     private final boolean chegadaExterna;
-    private final double minChegada;
-    private final double maxChegada;
-    private final double primeiraChegada;
+    private final double minAtendimento, maxAtendimento;
 
-    private final double minAtendimento;
-    private final double maxAtendimento;
-
-    private int clientes;
-    private long perdas;
+    private int clientes = 0;
+    private long perdas = 0L;
 
     private final boolean[] servidorOcupado;
-    private final double[] proximaSaidaServidor;
-    private final double[] tempoAcumuladoEstado;
+    private double[] tempoAcumuladoEstado;
 
-    public Fila(int id, int servidores, int capacidade, double minAtendimento, double maxAtendimento) {
-        this(id, servidores, capacidade, 0, 0, false, 0, minAtendimento, maxAtendimento);
-    }
-
-    public Fila(int id, int servidores, int capacidade,
-                double minChegada, double maxChegada, boolean chegadaExterna, double primeiraChegada,
-                double minAtendimento, double maxAtendimento) {
+    public Fila(int id, Modelo.ConfigFila cfg) {
         this.id = id;
-        this.servidores = servidores;
-        this.capacidade = capacidade;
-        this.chegadaExterna = chegadaExterna;
-        this.minChegada = minChegada;
-        this.maxChegada = maxChegada;
-        this.primeiraChegada = primeiraChegada;
-        this.minAtendimento = minAtendimento;
-        this.maxAtendimento = maxAtendimento;
-
-        this.clientes = 0;
-        this.perdas = 0L;
+        this.nome = cfg.nome;
+        this.servidores = cfg.servidores;
+        this.capacidade = cfg.capacidade;
+        this.chegadaExterna = cfg.chegadaExterna;
+        this.minChegada = cfg.minChegada;
+        this.maxChegada = cfg.maxChegada;
+        this.primeiraChegada = cfg.primeiraChegada;
+        this.minAtendimento = cfg.minAtendimento;
+        this.maxAtendimento = cfg.maxAtendimento;
 
         this.servidorOcupado = new boolean[servidores];
-        this.proximaSaidaServidor = new double[servidores];
-        Arrays.fill(this.proximaSaidaServidor, Double.MAX_VALUE);
-
-        this.tempoAcumuladoEstado = new double[capacidade + 1];
+        int tam = capacidade >= 0 ? capacidade + 1 : Math.max(servidores, 16) + 1;
+        this.tempoAcumuladoEstado = new double[tam];
     }
 
     public int getId() { return id; }
+    public String getNome() { return nome; }
     public int getServidores() { return servidores; }
     public int getCapacidade() { return capacidade; }
     public boolean temChegadaExterna() { return chegadaExterna; }
     public double getPrimeiraChegada() { return primeiraChegada; }
-    public int getClientes() { return clientes; }
     public long getPerdas() { return perdas; }
     public double[] getTempoAcumuladoEstado() { return tempoAcumuladoEstado; }
 
-    public boolean estaCheia() { return clientes >= capacidade; }
+    public boolean estaCheia() { return capacidade >= 0 && clientes >= capacidade; }
     public void entra() { clientes++; }
     public void sai() { clientes--; }
     public void perdeCliente() { perdas++; }
-    public void acumulaTempo(double delta) { tempoAcumuladoEstado[clientes] += delta; }
+
+    public void acumulaTempo(double delta) {
+        if (clientes >= tempoAcumuladoEstado.length) {
+            tempoAcumuladoEstado = Arrays.copyOf(tempoAcumuladoEstado,
+                    Math.max(clientes + 1, tempoAcumuladoEstado.length * 2));
+        }
+        tempoAcumuladoEstado[clientes] += delta;
+    }
 
     public int indiceServidorLivre() {
         for (int i = 0; i < servidores; i++) {
@@ -70,23 +64,16 @@ public class Fila {
         return -1;
     }
 
-    public void ocupaServidor(int idx, double tempoDeSaida) {
-        servidorOcupado[idx] = true;
-        proximaSaidaServidor[idx] = tempoDeSaida;
-    }
-
-    public void liberaServidor(int idx) {
-        servidorOcupado[idx] = false;
-        proximaSaidaServidor[idx] = Double.MAX_VALUE;
-    }
+    public void ocupaServidor(int idx) { servidorOcupado[idx] = true; }
+    public void liberaServidor(int idx) { servidorOcupado[idx] = false; }
 
     public boolean temClienteEsperando() { return clientes >= servidores; }
 
-    public double tempoEntreChegadas() {
-        return minChegada + Simulador.nextRandom() * (maxChegada - minChegada);
+    public double tempoEntreChegadas(Gerador g) {
+        return minChegada + g.proximo() * (maxChegada - minChegada);
     }
 
-    public double tempoDeAtendimento() {
-        return minAtendimento + Simulador.nextRandom() * (maxAtendimento - minAtendimento);
+    public double tempoDeAtendimento(Gerador g) {
+        return minAtendimento + g.proximo() * (maxAtendimento - minAtendimento);
     }
 }

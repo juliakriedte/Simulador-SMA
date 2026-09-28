@@ -1,4 +1,4 @@
-public enum TipoEvento{
+public enum TipoEvento {
     CHEGADA,
     SAIDA
 }
